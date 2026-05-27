@@ -237,6 +237,9 @@ export function LineChart({ data, width = 280, height = 100, color = '#00E600', 
   const id = React.useId();
   const pad = 6;
   const max = Math.max(...data), min = Math.min(...data);
+  // 데이터 없거나 1개 이하면 빈 SVG 반환
+  if (!data || data.length < 2) return <svg width={width} height={height} />;
+
   const range = max - min || 1;
   const w = width - pad * 2;
   const h = height - pad * 2;
@@ -281,7 +284,7 @@ export function LineChart({ data, width = 280, height = 100, color = '#00E600', 
         <path d={buildPath(dashed)} stroke={color} strokeWidth="2.2" fill="none" strokeLinecap="round"
               strokeDasharray="5 5" opacity="0.65" />
       )}
-      {dashedAfter != null && (
+      {dashedAfter != null && pts[splitIdx] && (
         <circle cx={pts[splitIdx][0]} cy={pts[splitIdx][1]} r="5" fill="var(--hf-bg-deep)" stroke={color} strokeWidth="2" />
       )}
     </svg>
