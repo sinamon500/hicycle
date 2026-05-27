@@ -299,3 +299,15 @@ button { font-family: inherit; }
 /* Disable native scrollbars inside cards too */
 .hf-glass *, .hf-glass-hi *, .hf-glass-soft * { scrollbar-width: none; }
 .hf-glass *::-webkit-scrollbar, .hf-glass-hi *::-webkit-scrollbar, .hf-glass-soft *::-webkit-scrollbar { display: none; }
+
+/* ── Input reset (모바일 터치 입력 보장) ─────────────────────────────── */
+input, textarea {
+  -webkit-appearance: none;
+  appearance: none;
+  pointer-events: auto;
+  touch-action: manipulation;
+  color: var(--hf-text);
+  font-family: 'Pretendard Variable', Pretendard, -apple-system, system-ui, sans-serif;
+}
+input::placeholder { color: var(--hf-text-25); }
+input:focus { outline: none; }

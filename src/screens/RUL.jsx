@@ -149,7 +149,7 @@ export default function RUL() {
       </Section>
 
       <div style={{ padding: '18px 24px 0', display: 'flex', gap: 10 }}>
-        <button className="hf-btn" style={{ flex: 1 }} onClick={() => navigate('/sensor')}>센서 보기</button>
+        <button className="hf-btn" style={{ flex: 1 }} onClick={() => navigate('/sensor', { state: { sensor: 'HI' } })}>센서 보기</button>
         <button className="hf-btn hf-btn-primary" style={{ flex: 1 }} onClick={() => navigate('/recovery')}>회수 요청</button>
       </div>
 

@@ -126,11 +126,11 @@ export function TabBar() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const tabs = [
-    { id: 'home',  to: '/dashboard', label: '홈',    match: ['/dashboard'] },
-    { id: 'diag',  to: '/rul',       label: '진단',  match: ['/rul', '/sensor'] },
-    { id: 'parts', to: '/twin',      label: '부품',  match: ['/twin'] },
-    { id: 'recov', to: '/recovery',  label: '회수',  match: ['/recovery', '/credit'] },
-    { id: 'me',    to: '/profile',   label: '내정보', match: ['/profile'] },
+    { id: 'home',  to: '/dashboard', label: '홈',      match: ['/dashboard'] },
+    { id: 'diag',  to: '/sensor',    label: '진단',    match: ['/sensor'] },
+    { id: 'parts', to: '/twin',      label: '실시간3D', match: ['/twin'] },
+    { id: 'recov', to: '/recovery',  label: '회수',    match: ['/recovery', '/credit'] },
+    { id: 'me',    to: '/profile',   label: '내정보',  match: ['/profile'] },
   ];
   return (
     <div className="hf-tabbar-wrap">
@@ -333,19 +333,28 @@ export function ProgressBar({ value = 50, max = 100, height = 12, color, label, 
   );
 }
 
-export function SensorTile({ label, value, unit, trend = 'flat', alert }) {
+export function SensorTile({ label, value, unit, trend = 'flat', alert, onClick }) {
   const trendIcon = { up: '↗', down: '↘', flat: '→' }[trend];
   const c = alert ? HF.bad : trend === 'up' ? HF.green : HF.text70;
   return (
-    <div className="hf-glass-soft" style={{ borderRadius: 18, padding: 12 }}>
+    <div
+      className="hf-glass-soft"
+      style={{ borderRadius: 18, padding: 12, cursor: onClick ? 'pointer' : 'default',
+               border: alert ? `1px solid ${HF.bad}55` : undefined,
+               transition: 'opacity .15s' }}
+      onClick={onClick}
+      onMouseEnter={e => onClick && (e.currentTarget.style.opacity = '0.8')}
+      onMouseLeave={e => onClick && (e.currentTarget.style.opacity = '1')}
+    >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span style={{ fontSize: 11, color: HF.text50, fontWeight: 500 }}>{label}</span>
         <span style={{ fontSize: 13, color: c }}>{trendIcon}</span>
       </div>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 3, marginTop: 6 }}>
-        <span style={{ fontSize: 22, fontWeight: 700, color: HF.text, letterSpacing: -1, lineHeight: 1 }}>{value}</span>
+        <span style={{ fontSize: 22, fontWeight: 700, color: alert ? HF.bad : HF.text, letterSpacing: -1, lineHeight: 1 }}>{value}</span>
         <span className="mono" style={{ fontSize: 11, color: HF.text40 }}>{unit}</span>
       </div>
+      {alert && <div style={{ fontSize: 9, color: HF.bad, marginTop: 4 }}>⚠ 기준 초과</div>}
     </div>
   );
 }

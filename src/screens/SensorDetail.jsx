@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   LineChart as RLineChart, Line, XAxis, YAxis, Tooltip,
   ReferenceLine, ResponsiveContainer, CartesianGrid,
@@ -8,22 +8,22 @@ import { HF } from '../theme.jsx';
 import { BackBar, Section, TabBar, ProgressBar } from '../components.jsx';
 import { useHICycleData } from '../hooks/useHICycleData';
 
+// "건전성 지수" → "HI 점수"
 const SENSOR_META = {
-  HI:        { label: '건전성 지수', unit: '',     color: '#00E600', fi: null },
-  pressure:  { label: '압력',       unit: 'bar',  color: '#4FC3F7', fi: null },
-  iso6:      { label: '오염도',     unit: 'ISO',  color: '#FFD54F', fi: 'FI_contam' },
-  drain:     { label: '드레인 유량', unit: 'L/m', color: '#81C784', fi: 'FI_drain' },
-  temp:      { label: '온도',       unit: '°C',   color: '#FF8A65', fi: 'FI_temp' },
-  vibration: { label: '진동',       unit: 'mm/s', color: '#CE93D8', fi: 'FI_vibration' },
+  HI:        { label: 'HI 점수',    unit: '',     color: '#00E600', fi: null },
+  pressure:  { label: '압력',        unit: 'bar',  color: '#4FC3F7', fi: null },
+  iso6:      { label: '오염도',      unit: 'ISO',  color: '#FFD54F', fi: 'FI_contam' },
+  drain:     { label: '드레인 유량', unit: 'L/m',  color: '#81C784', fi: 'FI_drain' },
+  temp:      { label: '온도',        unit: '°C',   color: '#FF8A65', fi: 'FI_temp' },
+  vibration: { label: '진동',        unit: 'mm/s', color: '#CE93D8', fi: 'FI_vibration' },
 };
 
-// FI 가중치 (FMEA RPN 기반)
 const FI_WEIGHT = {
-  FI_contam:   0.330,
-  FI_drain:    0.275,
-  FI_pressure: 0.165,
-  FI_temp:     0.161,
-  FI_vibration:0.069,
+  FI_contam:    0.330,
+  FI_drain:     0.275,
+  FI_pressure:  0.165,
+  FI_temp:      0.161,
+  FI_vibration: 0.069,
 };
 
 function downsample(arr, maxPoints = 200) {
@@ -34,40 +34,35 @@ function downsample(arr, maxPoints = 200) {
 
 export default function SensorDetail() {
   const location = useLocation();
+  const navigate = useNavigate();
   const initialSensor = location.state?.sensor ?? 'HI';
   const [activeSensor, setActiveSensor] = useState(initialSensor);
   const { data, loading, error, gradeDStartIndex } = useHICycleData();
 
   const meta = SENSOR_META[activeSensor];
 
+  // HI 탭일 때는 HI_score(하강) 사용, 나머지는 원시값
   const chartData = useMemo(() => {
     if (!data.length) return [];
-    const key = activeSensor === 'HI' ? 'HI' : activeSensor;
-    return downsample(data.map(r => ({ time: r.time, value: r[key] })));
+    if (activeSensor === 'HI') {
+      return downsample(data.map(r => ({ time: r.time, value: r.HI_score ?? r.HI * 100 })));
+    }
+    return downsample(data.map(r => ({ time: r.time, value: r[activeSensor] })));
   }, [data, activeSensor]);
-
-  const fiData = useMemo(() => {
-    if (!meta.fi || !data.length) return [];
-    return downsample(data.map(r => ({ time: r.time, value: r[meta.fi] })));
-  }, [data, meta.fi]);
 
   const stats = useMemo(() => {
     if (!data.length) return { min: '--', max: '--', avg: '--', last: '--' };
-    const key = activeSensor === 'HI' ? 'HI' : activeSensor;
-    const vals = data.map(r => r[key]);
-    const min = Math.min(...vals);
-    const max = Math.max(...vals);
-    const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
-    const last = vals[vals.length - 1];
+    const vals = chartData.map(r => r.value);
+    if (!vals.length) return { min: '--', max: '--', avg: '--', last: '--' };
     return {
-      min:  min.toFixed(3),
-      max:  max.toFixed(3),
-      avg:  avg.toFixed(3),
-      last: last.toFixed(3),
+      min:  Math.min(...vals).toFixed(activeSensor === 'HI' ? 1 : 3),
+      max:  Math.max(...vals).toFixed(activeSensor === 'HI' ? 1 : 3),
+      avg:  (vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(activeSensor === 'HI' ? 1 : 3),
+      last: vals[vals.length - 1].toFixed(activeSensor === 'HI' ? 1 : 3),
     };
-  }, [data, activeSensor]);
+  }, [chartData, activeSensor]);
 
-  // FMEA 기여도 (마지막 행 FI값 × 가중치)
+  // 열화 기여도 (FMEA) — HI 탭일 때만
   const fmeaContribs = useMemo(() => {
     if (!data.length) return [];
     const last = data[data.length - 1];
@@ -77,7 +72,6 @@ export default function SensorDetail() {
         FI_pressure: 'pressure', FI_temp: 'temp', FI_vibration: 'vibration',
       }[key]]?.label ?? key,
       value: Math.round((last[key] ?? 0) * w * 100),
-      weight: w,
     })).sort((a, b) => b.value - a.value);
   }, [data]);
 
@@ -103,7 +97,9 @@ export default function SensorDetail() {
         {Object.entries(SENSOR_META).map(([key, m]) => (
           <div key={key}
             className={`hf-pill ${activeSensor === key ? 'hf-pill-on' : ''}`}
-            style={{ whiteSpace: 'nowrap', borderColor: activeSensor === key ? m.color : undefined, color: activeSensor === key ? m.color : undefined }}
+            style={{ whiteSpace: 'nowrap',
+              borderColor: activeSensor === key ? m.color : undefined,
+              color:        activeSensor === key ? m.color : undefined }}
             onClick={() => setActiveSensor(key)}>
             {m.label}
           </div>
@@ -134,12 +130,13 @@ export default function SensorDetail() {
           <ResponsiveContainer width="100%" height={200}>
             <RLineChart data={chartData} margin={{ top: 4, right: 8, bottom: 0, left: -20 }}>
               <CartesianGrid stroke={HF.text10} strokeDasharray="3 3" />
-              <XAxis dataKey="time" tickFormatter={v => `${Math.round(v / 60)}m`}
+              <XAxis dataKey="time" tickFormatter={v => `${v}h`}
                 tick={{ fontSize: 10, fill: HF.text40 }} />
-              <YAxis tick={{ fontSize: 10, fill: HF.text40 }} />
+              <YAxis tick={{ fontSize: 10, fill: HF.text40 }}
+                domain={activeSensor === 'HI' ? [0, 100] : ['auto', 'auto']} />
               <Tooltip
-                formatter={v => [Number(v).toFixed(3), meta.label]}
-                labelFormatter={t => `${Math.round(t / 60)}분`}
+                formatter={v => [Number(v).toFixed(activeSensor === 'HI' ? 1 : 3), meta.label]}
+                labelFormatter={t => `${t}h`}
                 contentStyle={{ background: 'var(--hf-bg-deep)', border: `1px solid ${HF.glassBd}`, borderRadius: 10, fontSize: 12 }}
               />
               {gradeDTime && (
@@ -153,38 +150,13 @@ export default function SensorDetail() {
         </div>
       </Section>
 
-      {/* FI 차트 */}
-      {meta.fi && fiData.length > 0 && (
-        <Section title={`고장 지수 (FI) — ${meta.label}`}>
-          <div className="hf-glass-soft" style={{ borderRadius: 22, padding: '14px 8px 10px' }}>
-            <ResponsiveContainer width="100%" height={140}>
-              <RLineChart data={fiData} margin={{ top: 4, right: 8, bottom: 0, left: -20 }}>
-                <CartesianGrid stroke={HF.text10} strokeDasharray="3 3" />
-                <XAxis dataKey="time" tickFormatter={v => `${Math.round(v / 60)}m`}
-                  tick={{ fontSize: 10, fill: HF.text40 }} />
-                <YAxis domain={[0, 1]} tick={{ fontSize: 10, fill: HF.text40 }} />
-                <Tooltip
-                  formatter={v => [Number(v).toFixed(3), 'FI']}
-                  contentStyle={{ background: 'var(--hf-bg-deep)', border: `1px solid ${HF.glassBd}`, borderRadius: 10, fontSize: 12 }}
-                />
-                {gradeDTime && <ReferenceLine x={gradeDTime} stroke={HF.bad} strokeDasharray="4 2" />}
-                <Line type="monotone" dataKey="value" stroke={meta.color} strokeWidth={1.5}
-                  dot={false} opacity={0.8} />
-              </RLineChart>
-            </ResponsiveContainer>
-          </div>
-        </Section>
-      )}
-
-      {/* FMEA 기여도 (HI 탭일 때) */}
+      {/* 열화 기여도 — HI 탭일 때만 표시 (FI 차트 제거) */}
       {activeSensor === 'HI' && (
-        <Section title="열화 기여도 · FMEA RPN">
+        <Section title="열화 요인 · FMEA RPN">
           <div className="hf-glass-soft" style={{ borderRadius: 22, padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
             {fmeaContribs.map(x => (
               <ProgressBar key={x.label} value={x.value} max={100}
-                label={x.label}
-                valueLabel={`${x.value}%`}
-              />
+                label={x.label} valueLabel={`${x.value}%`} />
             ))}
           </div>
         </Section>
@@ -195,10 +167,10 @@ export default function SensorDetail() {
         <Section>
           <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
             {[
-              { g: 'A', c: HF.green, range: 'HI < 0.25' },
-              { g: 'B', c: HF.warn,  range: '0.25 ~ 0.50' },
-              { g: 'C', c: HF.warn,  range: '0.50 ~ 0.75' },
-              { g: 'D', c: HF.bad,   range: '≥ 0.75' },
+              { g: 'A', c: HF.green, range: 'HI > 75' },
+              { g: 'B', c: HF.warn,  range: '50 ~ 75' },
+              { g: 'C', c: HF.warn,  range: '25 ~ 50' },
+              { g: 'D', c: HF.bad,   range: '< 25' },
             ].map(({ g, c, range }) => (
               <div key={g} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <div style={{ width: 8, height: 8, borderRadius: '50%', background: c, boxShadow: `0 0 8px ${c}` }} />
@@ -209,9 +181,9 @@ export default function SensorDetail() {
         </Section>
       )}
 
-      <div style={{ padding: '0 24px 8px', display: 'flex', gap: 10 }}>
-        <button className="hf-btn hf-btn-primary" style={{ flex: 1 }}
-          onClick={() => setActiveSensor('HI')}>HI 전체 보기</button>
+      <div style={{ padding: '0 24px 8px' }}>
+        <button className="hf-btn hf-btn-primary" style={{ width: '100%' }}
+          onClick={() => setActiveSensor('HI')}>HI 점수 보기</button>
       </div>
 
       <TabBar />

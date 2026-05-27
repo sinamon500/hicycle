@@ -1,8 +1,10 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { HF } from '../theme.jsx';
 import { TopBar, TitleBlock, Section, TabBar, LineChart } from '../components.jsx';
 
 export default function Credit() {
+  const navigate = useNavigate();
   const txs = [
     { d: '5/24', t: '주행 모터 회수', v: '+85,000',  c: HF.green, icon: '♻' },
     { d: '5/18', t: '필터 6EA 회수',  v: '+18,000',  c: HF.green, icon: '♻' },
@@ -31,8 +33,8 @@ export default function Credit() {
             <div style={{ fontSize: 11, color: HF.text50, marginTop: 6 }}>누계 ₩1,820,000</div>
 
             <div style={{ display: 'flex', gap: 10, marginTop: 18 }}>
-              <button className="hf-btn" style={{ flex: 1, fontSize: 13, padding: '12px' }}>출금</button>
-              <button className="hf-btn hf-btn-primary" style={{ flex: 1, fontSize: 13, padding: '12px' }}>부품 구매</button>
+              <button className="hf-btn" style={{ flex: 1, fontSize: 13, padding: '12px' }} onClick={() => alert('출금 기능은 준비 중입니다')}>출금</button>
+              <button className="hf-btn hf-btn-primary" style={{ flex: 1, fontSize: 13, padding: '12px' }} onClick={() => navigate('/recovery')}>부품 구매</button>
             </div>
           </div>
         </div>
@@ -65,10 +67,10 @@ export default function Credit() {
         </div>
       </Section>
 
-      <Section title="거래 내역" action="전체 보기">
+      <Section title="거래 내역" action="전체 보기" onAction={() => {}}>
         <div className="hf-glass-soft" style={{ borderRadius: 22, padding: 6 }}>
           {txs.map((tx, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px',
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', cursor: 'pointer',
                                   borderBottom: i < txs.length - 1 ? `1px solid ${HF.divider}` : 'none' }}>
               <div style={{ width: 36, height: 36, borderRadius: 12,
                             background: tx.c === HF.green ? HF.greenDim : 'rgba(255,77,77,0.15)',

@@ -18,8 +18,8 @@ export default function Splash() {
         boxShadow: '0 20px 80px rgba(0,230,0,0.6), 0 0 60px rgba(0,230,0,0.4), inset 0 -8px 24px rgba(0,0,0,0.5)',
       }}></div>
       <div style={{ textAlign: 'center', marginTop: 8 }}>
-        <div style={{ fontSize: 44, fontWeight: 800, letterSpacing: -1.5, background: HF.gradText, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>ReGEN</div>
-        <div style={{ fontSize: 13, color: HF.text50, marginTop: 6, letterSpacing: 0.5 }}>건설기계 부품 바이백 · 디지털 트윈</div>
+        <div style={{ fontSize: 44, fontWeight: 800, letterSpacing: -1.5, background: HF.gradText, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>HI-CYCLE</div>
+        <div style={{ fontSize: 13, color: HF.text50, marginTop: 6, letterSpacing: 0.5 }}>건설기계 유압실린더 상태 모니터링</div>
       </div>
       <div style={{ position: 'absolute', bottom: 90, left: 0, right: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
         <div style={{ width: 200, height: 3, background: HF.text10, borderRadius: 99, overflow: 'hidden' }}>
