@@ -1,6 +1,6 @@
-# ReGEN — 건설기계 바이백 + 디지털 트윈 (React)
+# 건설기계 바이백 + 디지털 트윈 (React 기반)
 
-흑/백/그린(#00E600) 시스템 기반 모바일 UI. Pretendard 타이포, React 18 + React Router 6, 라이트/다크 모드 전역 지원.
+흑/백/그린(#00E600) 시스템 기반 모바일 UI. Pretendard 타이포, React 18 + React Router 6, 라이트/다크 모드 지원
 
 ## 빠른 시작
 
@@ -63,7 +63,7 @@ function MyComponent() {
 }
 ```
 
-테마는 `<html data-theme="dark|light">` 속성으로 적용되며, CSS 변수가 자동 전환됩니다.
+테마는 `<html data-theme="dark|light">` 속성으로 적용되며, CSS 변수가 자동 전환됨
 
 ## 디자인 토큰
 
@@ -77,7 +77,7 @@ import { HF } from './theme.jsx';
 </div>
 ```
 
-테마-동적 값은 CSS 변수로 자동 변환되어 라이트/다크 전환 시 함께 바뀝니다.
+테마-동적 값은 CSS 변수로 자동 변환되어 라이트/다크 전환 시 함께 바뀜
 
 ## 기존 프로젝트에 이식
 
