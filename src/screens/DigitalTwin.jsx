@@ -12,11 +12,10 @@ let unityWebglAvailable = false;
 let UnityComp = null;
 let useUnityCtx = null;
 
-// react-unity-webgl 설치 후 아래 주석 해제:
-// import { Unity, useUnityContext } from 'react-unity-webgl';
-// UnityComp = Unity;
-// useUnityCtx = useUnityContext;
-// unityWebglAvailable = true;
+import { Unity, useUnityContext } from 'react-unity-webgl';
+UnityComp = Unity;
+useUnityCtx = useUnityContext;
+unityWebglAvailable = true;
 
 /* ─────────────────────────────────────────────────────────────────────────
  * 유니티 WebGL 뷰어 (react-unity-webgl 있을 때만 렌더)
