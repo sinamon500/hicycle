@@ -69,7 +69,7 @@ function UnityViewer({ hiValue, grade, onReady, current }) {
       )}
       <UnityComp
         unityProvider={unityProvider}
-        style={{ width: '100%', height: '100%', borderRadius: 24 }}
+        style={{ width: '100%', height: '250px', borderRadius: 24 }}
       />
     </div>
   );

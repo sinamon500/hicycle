@@ -240,7 +240,7 @@ export function useHICycleData(csvPath = '/HI_CYCLE_e_2.csv') {
   }, [csvPath]);
 
   // 현재 상태 (마지막 행)
-  const current = useMemo(() => raw[raw.length - 1] ?? null, [raw]);
+  const current = useMemo(() => raw[16000] ?? null, [raw]);
 
   // grade D 진입 첫 인덱스
   const gradeDStartIndex = useMemo(
