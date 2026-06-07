@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HF } from '../theme.jsx';
 import { BackBar, Section, TabBar, Grade, Hotspot, LineChart } from '../components.jsx';
@@ -374,7 +374,9 @@ export default function DigitalTwin() {
         ))}
       </div>
 
+      <div className="bottom-safe-spacer" />
       <TabBar />
+      
     </>
   );
 }
