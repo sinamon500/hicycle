@@ -1,10 +1,9 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HF, useTheme } from '../theme.jsx';
-import { TopBar, TitleBlock, EquipBar, Section, TabBar, Grade, Gauge, SensorTile, LineChart, DriverScore } from '../components.jsx';
+import { TopBar, EquipBar, Section, TabBar, Grade, Gauge, SensorTile, LineChart } from '../components.jsx';
 import { Icon } from '../components/Icon.jsx';
 import { useHICycleData } from '../hooks/useHICycleData';
-import { useStreamingDemo } from '../hooks/useStreamingDemo';
 import { OrbAI } from '../components/OrbAI.jsx';
 
 /* ─── HI 수식 모달 ────────────────────────────────────────────────────── */
@@ -91,22 +90,13 @@ export default function Dashboard() {
   const { theme, toggle } = useTheme();
   const dark = theme === 'dark';
 
-  // 스트리밍 데모 모드
-  const streaming = useStreamingDemo(data, { initialSpeed: 100 });
-  const [demoMode, setDemoMode] = useState(false);
-
-  // 데모 모드일 때는 스트리밍 데이터 사용
-  const activeData    = demoMode ? streaming.streamData : data;
-  const activeCurrent = demoMode ? streaming.streamCurrent : current;
+  const activeData = data;
+  const activeCurrent = current;
 
   // HI 점수
   const hiScoreArr = useMemo(() => {
-    if (demoMode) {
-      const step = Math.max(1, Math.floor(streaming.streamData.length / 200));
-      return streaming.streamData.filter((_, i) => i % step === 0).map(r => r.HI * 100);
-    }
     return sensorSeries.HI.map(r => r.value * 100);
-  }, [sensorSeries, demoMode, streaming.streamData]);
+  }, [sensorSeries]);
 
   const hiScore    = activeCurrent ? Math.round(activeCurrent.HI * 100) : 0;
   const grade      = activeCurrent?.stableGrade ?? 'A';
@@ -257,13 +247,13 @@ export default function Dashboard() {
 
           {/* HI 점수 트렌드 */}
           <div style={{ marginTop: 12 }}>
-            <div style={{ fontSize: 11, color: HF.text50, marginBottom: 6 }}>HI 점수 추이 {demoMode ? '(라이브)' : '(전체)'}</div>
+            <div style={{ fontSize: 11, color: HF.text50, marginBottom: 6 }}>HI 점수 추이 (전체)</div>
             <LineChart
               data={hiScoreArr}
               width={290} height={70}
               color={gradeColor[grade]}
               fill
-              dashedAfter={!demoMode && gradeDStartIndex > 0 ? gradeDStartIndex / hiScoreArr.length : null}
+              dashedAfter={gradeDStartIndex > 0 ? gradeDStartIndex / hiScoreArr.length : null}
               threshold={25}
             />
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
@@ -303,42 +293,8 @@ export default function Dashboard() {
         </div>
       </Section>
 
-      <div style={{ padding: '8px 24px 0', display: 'flex', gap: 8, alignItems: 'center' }}>
-        <div
-          className={`hf-pill ${demoMode ? 'hf-pill-on' : ''}`}
-          style={{ padding: '4px 10px', fontSize: 10, cursor: 'pointer' }}
-          onClick={() => {
-            if (!demoMode) { setDemoMode(true); streaming.start(); }
-            else { setDemoMode(false); streaming.stop(); }
-          }}
-          aria-label="라이브 데모 토글"
-        >
-          {demoMode
-            ? <span>▶ LIVE {Math.round(streaming.progress * 100)}%</span>
-            : <><Icon name="play" size={11} /><span>데모</span></>}
-        </div>
-        {demoMode && (
-          <div className="hf-pill" style={{ padding: '4px 8px', fontSize: 10 }}
-            onClick={() => streaming.setSpeed(streaming.speed === 100 ? 300 : streaming.speed === 300 ? 50 : 100)}>
-            ×{streaming.speed === 100 ? '1' : streaming.speed === 300 ? '3' : '0.5'}
-          </div>
-        )}
-      </div>
-
-      {/* 바로가기 */}
-      <Section title="바로가기">
-        <div style={{ display: 'flex', gap: 10, marginBottom: 12 }}>
-          <button className="hf-btn" style={{ flex: 1 }} onClick={() => navigate('/sensor')} aria-label="센서 진단">센서 진단</button>
-          <button className="hf-btn" style={{ flex: 1 }} onClick={() => navigate('/twin')} aria-label="실시간 3D">실시간 3D</button>
-          <button className="hf-btn hf-btn-primary" style={{ flex: 1 }} onClick={() => navigate('/recovery')} aria-label="회수 요청">회수 요청</button>
-        </div>
-      </Section>
-
-
-
-      <TabBar />
-      <TabBar />
       <div className="bottom-safe-spacer" />
+      <TabBar />
 
       {/* 플로팅 AI 버튼 */}
       <div 
@@ -360,9 +316,5 @@ export default function Dashboard() {
 
       {showOrb && <OrbAI onClose={() => setShowOrb(false)} />}
     </>
-
-    
   );
-
-    
 }

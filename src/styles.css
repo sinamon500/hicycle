@@ -452,6 +452,6 @@ input:focus { outline: none; }
 
 
 .bottom-safe-spacer {
-  height: calc(88px + env(safe-area-inset-bottom, 0px));
+  height: calc(280px + env(safe-area-inset-bottom, 0px));
   flex-shrink: 0;
 }
