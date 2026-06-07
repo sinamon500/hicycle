@@ -152,7 +152,7 @@ export default function RUL() {
     <>
       {showModel && <ModelInfoPanel rul={rul} onClose={() => setShowModel(false)} />}
 
-      <BackBar sub="잔여 수명" label="RUL · Remaining Useful Life" />
+      <BackBar sub="잔여 수명" label="RUL" />
 
       {/* 부품 탭 */}
       <div style={{ padding: '14px 20px 0' }}>

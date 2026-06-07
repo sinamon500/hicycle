@@ -42,21 +42,36 @@ export const HF = {
 };
 
 /* ───────────────────────────────────────────────────────────────────────────
- * Theme context — 다크모드를 제거하고 Light 테마로 고정합니다.
- * CSS 변수들은 모두 html 수준이나 :root에 고정적으로 적용됩니다.
+ * Theme context — light/dark 전역 테마.
+ * <html data-theme="..."> 한 곳만 바꾸면 앱 전체(탭바 포함)가 전환됩니다.
+ * 선택값은 localStorage 에 저장되어 새로고침/화면 이동 후에도 유지됩니다.
  * ─────────────────────────────────────────────────────────────────────────── */
 const ThemeCtx = createContext({ theme: 'light', setTheme: () => {}, toggle: () => {} });
 export const useTheme = () => useContext(ThemeCtx);
 
+function getInitialTheme() {
+  try {
+    const saved = localStorage.getItem('hf-theme');
+    if (saved === 'dark' || saved === 'light') return saved;
+  } catch { /* localStorage 사용 불가 환경 */ }
+  return 'light';
+}
+
 export function ThemeProvider({ children }) {
-  // 항상 light 테마만 사용
+  const [theme, setThemeState] = useState(getInitialTheme);
+
+  // 테마가 바뀔 때마다 html 속성 + 저장
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', 'light');
-    document.documentElement.style.colorScheme = 'light';
-  }, []);
+    document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.style.colorScheme = theme;
+    try { localStorage.setItem('hf-theme', theme); } catch { /* noop */ }
+  }, [theme]);
+
+  const setTheme = (t) => setThemeState(t === 'dark' ? 'dark' : 'light');
+  const toggle   = () => setThemeState(t => (t === 'dark' ? 'light' : 'dark'));
 
   return (
-    <ThemeCtx.Provider value={{ theme: 'light', setTheme: () => {}, toggle: () => {} }}>
+    <ThemeCtx.Provider value={{ theme, setTheme, toggle }}>
       {children}
     </ThemeCtx.Provider>
   );

@@ -38,12 +38,12 @@ export default function Recovery() {
           display: 'flex', alignItems: 'center', gap: 12 }}>
           <span style={{ fontSize: 22 }}>🚨</span>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: HF.bad }}>등급 D — 긴급 회수 권장</div>
-            <div style={{ fontSize: 11, color: HF.text50, marginTop: 2 }}>
+            <div style={{ fontSize: 17, fontWeight: 700, color: HF.bad }}>등급 D로 긴급 회수 권장</div>
+            <div style={{ fontSize: 11, color: HF.bad, marginTop: 2 }}>
               유압실린더 HI {((current?.HI ?? 0) * 100).toFixed(1)} · RUL {rul?.remainingHours ?? '--'}h
             </div>
           </div>
-          <div className="hf-pill" style={{ padding: '6px 10px', fontSize: 10, color: HF.bad, borderColor: `${HF.bad}66` }}>긴급</div>
+          <div className="hf-pill" style={{ padding: '6px 10px', fontSize: 12, color: HF.bad, borderColor: `${HF.bad}66` }}>긴급</div>
         </div>
       )}
 
@@ -118,7 +118,7 @@ export default function Recovery() {
               boxShadow: `0 4px 16px ${HF.green}80` }}>🚛</div>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 13, fontWeight: 600 }}>수거 완료 진행 중</div>
-              <div style={{ fontSize: 11, color: HF.text50, marginTop: 2 }}>예정 05/27 10:00 · 기사 박ㅇㅇ 010-XXXX</div>
+              <div style={{ fontSize: 11, color: HF.text50, marginTop: 2 }}>예정 05/27 10:00 · 박ㅇㅇ 기사</div>
             </div>
             <button className="hf-pill" style={{ padding: '8px 10px' }}>💬</button>
           </div>

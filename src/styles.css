@@ -33,6 +33,52 @@
   --hf-page-bg: #f8f9fa;
 }
 
+/* ── Dark theme (DashboardNew 시안용 · [data-theme="dark"] 일 때만 활성) ── */
+html[data-theme="dark"] {
+  --hf-bg: #050807;
+  --hf-bg-deep: #020403;
+  --hf-text: #eaf2ed;
+  --hf-text-90: #d2ded7;
+  --hf-text-70: #a6b4ad;
+  --hf-text-50: #7a8780;
+  --hf-text-40: #5b6660;
+  --hf-text-25: #353f3a;
+  --hf-text-10: #121a16;
+
+  --hf-glass: #0b120e;
+  --hf-glass-bd: rgba(0,168,89,0.10);
+  --hf-glass-hi: #0e1611;
+  --hf-glass-hi-bd: rgba(0,168,89,0.14);
+
+  --hf-green-dim: rgba(0,168,89,0.18);
+  --hf-green-bd: rgba(0,168,89,0.34);
+  --hf-grad-text: #00D16B;
+  --hf-hero-text: #ffffff;
+  --hf-hero-shadow: 0 0 26px rgba(0,209,107,0.22);
+  --hf-divider: #1c241f;
+  --hf-soft-bg: #0b120e;
+  --hf-soft-bd: #1c241f;
+  --hf-tabbar-bg: #050807;
+  --hf-screen-glow-1: rgba(0,168,89,0.10);
+  --hf-screen-glow-2: rgba(0,102,51,0.05);
+  --hf-page-bg: #020403;
+}
+
+/* 다크: 화면 바탕에 은은한 초록 글로우 그라데이션 */
+html[data-theme="dark"] .app-screen {
+  background:
+    radial-gradient(125% 80% at 50% -12%, rgba(0,168,89,0.18) 0%, rgba(0,102,51,0.06) 32%, transparent 62%),
+    var(--hf-page-bg);
+}
+
+/* 다크: 카드에 진초록 그라데이션 (인라인 배경 쓰는 카드는 제외됨) */
+html[data-theme="dark"] .hf-glass,
+html[data-theme="dark"] .hf-glass-soft,
+html[data-theme="dark"] .hf-glass-hi {
+  background: linear-gradient(155deg, rgba(0,168,89,0.12) 0%, rgba(0,102,51,0.035) 42%, var(--hf-soft-bg) 100%);
+  border-color: rgba(0,168,89,0.16);
+}
+
 /* ── Base ───────────────────────────────────────────────────────────── */
 * { box-sizing: border-box; }
 html, body, #root { height: 100%; margin: 0; padding: 0; }
@@ -79,13 +125,19 @@ button { font-family: inherit; }
   }
   .app-screen::before { position: absolute; }
   .app-content { height: calc(820px - 0px); overflow-y: auto; -webkit-overflow-scrolling: touch; }
+
+  /* 다크모드 시안: 폰 프레임 화면 배경도 어둡게 (light 원본은 영향 없음) */
+  html[data-theme="dark"] .app-screen {
+    border-color: #1c241f;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+  }
 }
 
 .app-content {
   height: 100dvh;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding-bottom: 110px; /* room for floating tabbar */
+  padding-bottom: calc(124px + env(safe-area-inset-bottom, 0px)); /* room for floating tabbar */
 }
 .app-content::-webkit-scrollbar { display: none; }
 .app-content { scrollbar-width: none; }
@@ -178,9 +230,9 @@ button { font-family: inherit; }
 }
 .hf-tabbar {
   display: flex; justify-content: space-around; align-items: center;
-  padding: 12px 16px 28px;
+  padding: 12px 16px calc(28px + env(safe-area-inset-bottom, 0px));
   border-radius: 0;
-  background: #ffffff;
+  background: var(--hf-tabbar-bg);
   border-top: 1px solid var(--hf-divider);
   pointer-events: auto;
   box-shadow: 0 -4px 20px rgba(0,0,0,0.02);

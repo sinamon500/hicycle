@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { HF } from '../theme.jsx';
 import { useHICycleData } from '../hooks/useHICycleData';
+import { Icon } from './Icon.jsx';
 
 /**
  * OrbAI — 장비 상태를 인지하는 AI 정비 어시스턴트
@@ -69,23 +70,23 @@ export function OrbAI({ onClose }) {
 
   return (
     <div className="info-modal-overlay" style={{ zIndex: 1000 }} onClick={onClose} role="dialog" aria-label="AI 정비 어시스턴트">
-      <div className="info-modal" style={{ height: '80vh', display: 'flex', flexDirection: 'column', padding: 0 }} onClick={e => e.stopPropagation()}>
+      <div className="info-modal" style={{ height: 'min(80dvh, 640px)', maxHeight: '90dvh', display: 'flex', flexDirection: 'column', padding: 0, overflow: 'hidden' }} onClick={e => e.stopPropagation()}>
         {/* 헤더 */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderBottom: `1px solid ${HF.divider}` }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#eaf8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, border: '1px solid rgba(0,168,89,0.1)' }}>
-              🤖
+            <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#eaf8f0', display: 'flex', alignItems: 'center', justifyContent: 'center', color: HF.green, border: '1px solid rgba(0,168,89,0.1)' }}>
+              <Icon name="bot" size={20} />
             </div>
             <div>
               <div style={{ fontSize: 15, fontWeight: 700 }}>Orb AI</div>
               <div style={{ fontSize: 11, color: HF.green }}>● 온라인</div>
             </div>
           </div>
-          <button className="hf-pill" style={{ padding: '6px 10px' }} onClick={onClose} aria-label="닫기">✕</button>
+          <button className="hf-pill" style={{ padding: '6px 10px' }} onClick={onClose} aria-label="닫기"><Icon name="close" size={14} /></button>
         </div>
 
         {/* 메시지 리스트 */}
-        <div ref={scrollRef} style={{ flex: 1, overflowY: 'auto', padding: '20px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div ref={scrollRef} style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '20px', display: 'flex', flexDirection: 'column', gap: 16 }}>
           {messages.map(m => (
             <div key={m.id} style={{ display: 'flex', justifyContent: m.sender === 'user' ? 'flex-end' : 'flex-start' }}>
               <div style={{
@@ -112,7 +113,7 @@ export function OrbAI({ onClose }) {
         </div>
 
         {/* 입력창 */}
-        <div style={{ padding: '12px 16px', borderTop: `1px solid ${HF.divider}` }}>
+        <div style={{ padding: '12px 16px', borderTop: `1px solid ${HF.divider}`, flexShrink: 0 }}>
           <div style={{ display: 'flex', gap: 8 }}>
             <input
               type="text"
@@ -136,7 +137,7 @@ export function OrbAI({ onClose }) {
               }}
               onClick={handleSend}
             >
-              ↑
+              <Icon name="send" size={18} />
             </button>
           </div>
         </div>

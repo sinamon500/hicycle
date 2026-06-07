@@ -211,23 +211,59 @@ export default function DigitalTwin() {
         }
       />
 
-      {/* grade D 경보 배너 */}
+
+      {/* grade D 긴급 배너 + 회수 버튼 */}
       {showAlert && (
-        <div style={{
-          margin: '10px 16px 0',
-          padding: '12px 16px',
-          borderRadius: 18,
-          background: 'rgba(255,51,51,0.15)',
-          border: `1px solid ${HF.bad}66`,
-          display: 'flex', alignItems: 'center', gap: 10,
-        }}>
-          <span style={{ fontSize: 18 }}>⚠️</span>
+        <div
+          style={{
+            margin: '10px 24px 0',
+            padding: '14px 16px',
+            borderRadius: 20,
+            background: 'rgba(255,51,51,0.12)',
+            border: `1px solid ${HF.bad}55`,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+          }}
+        >
+          <span style={{ fontSize: 22 }}>🚨</span>
+
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: HF.bad }}>등급 D — 즉시 점검 필요</div>
-            <div style={{ fontSize: 11, color: HF.text50, marginTop: 2 }}>HI {(hiValue * 100).toFixed(1)} · 유압실린더 회수를 권장합니다</div>
+            <div
+              style={{
+                fontSize: 17,
+                fontWeight: 700,
+                color: HF.bad,
+              }}
+            >
+              등급 D로 긴급 회수 권장
+            </div>
+
+            <div
+              style={{
+                fontSize: 11,
+                color: HF.bad,
+                marginTop: 2,
+              }}
+            >
+              유압실린더 HI {((current?.HI ?? 0) * 100).toFixed(1)} · RUL{' '}
+              {rul?.remainingHours ?? '--'}h
+            </div>
           </div>
-          <button className="hf-pill" style={{ padding: '8px 10px', color: HF.bad, borderColor: `${HF.bad}66`, fontSize: 11, whiteSpace: 'nowrap' }}
-            onClick={() => navigate('/recovery')}>회수 →</button>
+
+          <button
+            className="hf-pill"
+            style={{
+              padding: '8px 10px',
+              color: HF.bad,
+              borderColor: `${HF.bad}66`,
+              fontSize: 11,
+              whiteSpace: 'nowrap',
+            }}
+            onClick={() => navigate('/recovery')}
+          >
+            회수 →
+          </button>
         </div>
       )}
 
@@ -270,7 +306,7 @@ export default function DigitalTwin() {
       </div>
 
       {/* 선택 부품 상세 카드 */}
-      <Section title="선택된 부품">
+      <Section title="부품">
         <div className="hf-glass-hi" style={{ borderRadius: 24, padding: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <Grade grade={s.grade} size={48} />

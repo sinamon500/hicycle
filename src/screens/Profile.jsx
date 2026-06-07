@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { HF, useTheme } from '../theme.jsx';
 import { TopBar, TitleBlock, Section, TabBar } from '../components.jsx';
+import { Icon } from '../components/Icon.jsx';
 import { useHICycleData } from '../hooks/useHICycleData';
 
 export default function Profile() {
@@ -22,7 +23,7 @@ export default function Profile() {
 
   return (
     <>
-      <TopBar right={<div className="hf-pill" style={{ padding: '10px 12px' }}>⚙</div>} />
+      <TopBar right={<div className="hf-pill" style={{ padding: '10px 12px' }}><Icon name="gear" size={16} /></div>} />
       <TitleBlock title="내 정보" />
 
       {/* 프로필 카드 */}
@@ -94,11 +95,11 @@ export default function Profile() {
       <Section title="설정">
         <div className="hf-glass-soft" style={{ borderRadius: 22, padding: 0 }}>
           {[
-            { i: '🚜', t: '장비 관리',  s: '12대',          toggle: false },
-            { i: '🔔', t: '알림 설정',  s: '이상/RUL/회수', toggle: false },
-            { i: '🌐', t: '언어',       s: '한국어',         toggle: false },
-            { i: '📏', t: '단위',       s: 'bar / °C',       toggle: false },
-            { i: '🌙', t: '다크 모드',  s: isDark ? '켜짐' : '꺼짐', toggle: true, on: isDark },
+            { i: 'truck', t: '장비 관리',  s: '12대',          toggle: false },
+            { i: 'bell', t: '알림 설정',  s: '이상/RUL/회수', toggle: false },
+            { i: 'globe', t: '언어',       s: '한국어',         toggle: false },
+            { i: 'ruler', t: '단위',       s: 'bar / °C',       toggle: false },
+            { i: 'moon', t: '다크 모드',  s: isDark ? '켜짐' : '꺼짐', toggle: true, on: isDark },
           ].map((r, i, arr) => (
             <div key={r.t} style={{
               display: 'flex', alignItems: 'center', padding: '14px 16px', gap: 12,
@@ -106,7 +107,7 @@ export default function Profile() {
               cursor: r.toggle ? 'default' : 'pointer',
             }}>
               <div style={{ width: 34, height: 34, borderRadius: 10, background: HF.text10,
-                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15 }}>{r.i}</div>
+                display: 'flex', alignItems: 'center', justifyContent: 'center', color: HF.text70 }}><Icon name={r.i} size={17} /></div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 14, fontWeight: 600 }}>{r.t}</div>
                 <div style={{ fontSize: 11, color: HF.text40, marginTop: 1 }}>{r.s}</div>

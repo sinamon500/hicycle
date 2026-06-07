@@ -44,7 +44,7 @@ export default function Credit() {
       </div>
 
       {/* 경제성 분석 섹션 */}
-      <Section title="💰 경제성 분석 · 유압실린더">
+      <Section title="얼마나 이득인지 분석해요">
         <div className="econ-card">
           <div style={{ fontSize: 12, color: HF.text50, marginBottom: 12 }}>신품 vs 재제조 비용 비교</div>
 
@@ -91,7 +91,7 @@ export default function Credit() {
           </div>
 
           <div style={{ marginTop: 12, fontSize: 11, color: HF.text50, lineHeight: 1.6 }}>
-            등급이 높을수록(A→D) 바이백 가치가 높습니다. 숙련 운전자의 부품은 열화가 적어 재제조 효율이 높기 때문에 더 높은 크레딧이 지급됩니다.
+            등급이 높을수록(A~D) 바이백 가치가 높아요! 숙련된 운전자의 부품은 열화가 적어 재제조 효율이 높기 때문에 더 높은 크레딧이 지급돼요.
           </div>
         </div>
       </Section>

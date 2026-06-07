@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { HF, useTheme } from './theme.jsx';
+import { Icon } from './components/Icon.jsx';
 
 /* ───────────────────────────────────────────────────────────────────────────
  * Layout / chrome
@@ -72,8 +73,8 @@ export function EquipBar({ name = 'HD HX300L', id = '#2018', status = '운행중
           width: 36, height: 36, borderRadius: 99,
           background: HF.greenDim,
           border: `1px solid ${HF.greenBd}`,
-          display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18,
-        }}>🚜</div>
+          display: 'flex', alignItems: 'center', justifyContent: 'center', color: HF.green,
+        }}><Icon name="truck" size={18} /></div>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 13, fontWeight: 600 }}>{name} · <span style={{ color: HF.text50 }}>{id}</span></div>
           <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginTop: 2 }}>
@@ -81,7 +82,7 @@ export function EquipBar({ name = 'HD HX300L', id = '#2018', status = '운행중
             <span style={{ fontSize: 11, color: HF.text50 }}>현장 A · {status}</span>
           </div>
         </div>
-        <span style={{ fontSize: 14, color: HF.text40 }}>⇄</span>
+        <span style={{ display: 'flex', color: HF.text40 }}><Icon name="swap" size={16} /></span>
       </div>
     </div>
   );

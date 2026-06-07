@@ -1,7 +1,8 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { HF } from '../theme.jsx';
+import { HF, useTheme } from '../theme.jsx';
 import { TopBar, TitleBlock, EquipBar, Section, TabBar, Grade, Gauge, SensorTile, LineChart, DriverScore } from '../components.jsx';
+import { Icon } from '../components/Icon.jsx';
 import { useHICycleData } from '../hooks/useHICycleData';
 import { useStreamingDemo } from '../hooks/useStreamingDemo';
 import { OrbAI } from '../components/OrbAI.jsx';
@@ -12,8 +13,8 @@ function HIFormulaModal({ info, onClose }) {
     <div className="info-modal-overlay" onClick={onClose} role="dialog" aria-label="HI 수식 정보">
       <div className="info-modal" onClick={e => e.stopPropagation()}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-          <div style={{ fontSize: 18, fontWeight: 700 }}>📐 HI 산출 수식</div>
-          <button className="hf-pill" style={{ padding: '6px 10px' }} onClick={onClose} aria-label="닫기">✕</button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 18, fontWeight: 700 }}><Icon name="formula" size={20} /> HI 산출 수식</div>
+          <button className="hf-pill" style={{ padding: '6px 10px' }} onClick={onClose} aria-label="닫기"><Icon name="close" size={14} /></button>
         </div>
 
         {/* 기본 수식 */}
@@ -86,6 +87,10 @@ export default function Dashboard() {
   const { current, loading, error, sensorSeries, gradeDStartIndex, data, HI_FORMULA_INFO } = useHICycleData();
   const [showFormula, setShowFormula] = useState(false);
 
+  // ── 다크모드 (전역 테마 · 다른 화면/탭바까지 함께 전환) ──────────────────
+  const { theme, toggle } = useTheme();
+  const dark = theme === 'dark';
+
   // 스트리밍 데모 모드
   const streaming = useStreamingDemo(data, { initialSpeed: 100 });
   const [demoMode, setDemoMode] = useState(false);
@@ -141,77 +146,61 @@ export default function Dashboard() {
 
       <TopBar right={
         <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+          {/* 다크모드 토글 */}
+          <button className="hf-pill" style={{ padding: '10px 12px' }}
+            onClick={toggle} aria-label="다크모드 전환">
+            <Icon name={dark ? 'sun' : 'moon'} size={16} />
+          </button>
           {/* 알림 배지 */}
           <button className="hf-pill" style={{ padding: '10px 12px', position: 'relative' }}
             onClick={() => navigate('/notifications')} aria-label="알림">
-            🔔
+            <Icon name="bell" size={16} />
             <span className="notification-dot" />
           </button>
         </div>
       } />
-      <TitleBlock title="대시보드" subtitle="HI-CYCLE 통합 모니터링" />
-
-      {/* 날씨 맞춤형 장비 관리 알림 */}
-      <div style={{ padding: '0 24px 12px' }}>
-        <div className="hf-glass-soft" style={{ borderRadius: 16, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(33, 150, 243, 0.08)', border: '1px solid rgba(33, 150, 243, 0.2)' }}>
-          <div style={{ fontSize: 20 }}>❄️</div>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#1976D2' }}>내일 영하 10도 한파 특보</div>
-            <div style={{ fontSize: 11, color: HF.text50, marginTop: 4, lineHeight: 1.3 }}>아침 시동 시 유압유 예열을 평소보다 5분 더 해주세요.</div>
-          </div>
-        </div>
-      </div>
 
       <EquipBar name="HD HX300L" id="#2018" status="운행중" />
 
-      {/* 운전 마스터 온도 */}
-      <div style={{ padding: '4px 24px 0' }}>
-        <div className="hf-glass-soft" style={{ padding: '16px', borderRadius: 20 }}>
-          <DriverScore score={72.5} />
-        </div>
-      </div>
-
-      {/* 내 장비 가계부 & ESG 리포트 */}
-      <div style={{ padding: '12px 24px 0', display: 'flex', gap: 12 }}>
-        {/* 가계부 (ROI) */}
-        <div className="hf-glass-soft" style={{ flex: 1, borderRadius: 16, padding: '14px', display: 'flex', flexDirection: 'column', border: `1px solid var(--hf-divider)` }}>
-          <div style={{ fontSize: 11, color: HF.text50, fontWeight: 600, marginBottom: 6 }}>이번 달 아낀 유지비</div>
-          <div style={{ fontSize: 18, fontWeight: 800, color: HF.green, letterSpacing: -0.5 }}>₩350,000</div>
-        </div>
-        {/* ESG 탄소 저감 리포트 */}
-        <div className="hf-glass-soft" style={{ flex: 1, borderRadius: 16, padding: '14px', display: 'flex', flexDirection: 'column', border: `1px solid var(--hf-divider)` }}>
-          <div style={{ fontSize: 11, color: HF.text50, fontWeight: 600, marginBottom: 6 }}>ESG 탄소 저감량</div>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-            <div style={{ fontSize: 18, fontWeight: 800, color: '#27AE60', letterSpacing: -0.5 }}>152<span style={{ fontSize: 12, fontWeight: 600 }}>kg</span></div>
-            <div style={{ fontSize: 11, color: '#27AE60', fontWeight: 700 }}>(🌲 12그루)</div>
-          </div>
-        </div>
-      </div>
-
-      {/* KONECT 연동 상태 + 데모 모드 */}
-      <div style={{ padding: '8px 24px 0', display: 'flex', gap: 8, alignItems: 'center' }}>
-        <div className="hf-pill" style={{ padding: '4px 10px', fontSize: 10, background: 'rgba(0,102,51,0.08)', color: HF.green, cursor: 'pointer' }}
-          onClick={() => navigate('/konect')} aria-label="KONECT 연동 상태">
-          <span style={{ width: 6, height: 6, borderRadius: 99, background: HF.green, display: 'inline-block', marginRight: 4, boxShadow: `0 0 6px ${HF.green}` }} />
-          KONECT 연동
-        </div>
+      {/* 실시간 디지털 트윈 진입 (장비 바로 아래) */}
+      <div style={{ padding: '0 24px', marginTop: 14, marginBottom: 8 }}>
         <div
-          className={`hf-pill ${demoMode ? 'hf-pill-on' : ''}`}
-          style={{ padding: '4px 10px', fontSize: 10, cursor: 'pointer' }}
-          onClick={() => {
-            if (!demoMode) { setDemoMode(true); streaming.start(); }
-            else { setDemoMode(false); streaming.stop(); }
+          onClick={() => navigate('/twin')}
+          role="button"
+          aria-label="실시간 3D 디지털 트윈 열기"
+          style={{
+            position: 'relative', overflow: 'hidden', cursor: 'pointer',
+            borderRadius: 24, padding: 18,
+            background: HF.gradGreen,
+            display: 'flex', alignItems: 'center', gap: 16,
+            boxShadow: '0 10px 30px rgba(0,102,51,0.28)',
           }}
-          aria-label="라이브 데모 토글"
         >
-          {demoMode ? `▶ LIVE ${Math.round(streaming.progress * 100)}%` : '🎬 데모'}
-        </div>
-        {demoMode && (
-          <div className="hf-pill" style={{ padding: '4px 8px', fontSize: 10 }}
-            onClick={() => streaming.setSpeed(streaming.speed === 100 ? 300 : streaming.speed === 300 ? 50 : 100)}>
-            ×{streaming.speed === 100 ? '1' : streaming.speed === 300 ? '3' : '0.5'}
+          {/* 배경 장식 */}
+          <div style={{ position: 'absolute', right: -30, top: -30, width: 140, height: 140, borderRadius: '50%', background: 'rgba(255,255,255,0.08)' }} />
+          <div style={{ position: 'absolute', right: 20, bottom: -40, width: 90, height: 90, borderRadius: '50%', background: 'rgba(255,255,255,0.06)' }} />
+
+          <div style={{
+            width: 52, height: 52, borderRadius: 16, flexShrink: 0, color: '#fff',
+            background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(4px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <Icon name="cube" size={28} strokeWidth={1.6} />
           </div>
-        )}
+          <div style={{ flex: 1, zIndex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontSize: 16, fontWeight: 800, color: '#fff', letterSpacing: -0.3 }}>실시간 디지털 트윈</span>
+              <span style={{
+                fontSize: 9, fontWeight: 800, color: HF.green, background: '#fff',
+                padding: '2px 6px', borderRadius: 99, letterSpacing: 0.5,
+              }}>3D</span>
+            </div>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.85)', marginTop: 3, lineHeight: 1.35 }}>
+              유압실린더 상태를 3D 모델로 바로 확인하기
+            </div>
+          </div>
+          <div style={{ fontSize: 22, color: '#fff', zIndex: 1, fontWeight: 300 }}>›</div>
+        </div>
       </div>
 
       {/* HI 게이지 + 등급 */}
@@ -223,7 +212,7 @@ export default function Dashboard() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
                 <Grade grade={grade} size={48} />
                 <div>
-                  <div style={{ fontSize: 22, fontWeight: 700, color: gradeColor[grade], letterSpacing: -0.5 }}>등급 {grade}</div>
+                  <div style={{ fontSize: 22, fontWeight: 700, color: gradeColor[grade], letterSpacing: -0.5 }}>등급 </div>
                   <div style={{ fontSize: 12, color: HF.text50, marginTop: 2 }}>{gradeLabel[grade]}</div>
                 </div>
               </div>
@@ -239,12 +228,12 @@ export default function Dashboard() {
           {/* HI 수식 보기 버튼 */}
           <button className="hf-pill" style={{ marginTop: 10, padding: '6px 12px', fontSize: 11, width: '100%', justifyContent: 'center' }}
             onClick={() => setShowFormula(true)} aria-label="HI 수식 보기">
-            📐 HI 산출 수식 보기
+            <Icon name="formula" size={13} /><span>HI 산출 수식 보기</span>
           </button>
 
           {/* HI 점수 트렌드 */}
           <div style={{ marginTop: 12 }}>
-            <div style={{ fontSize: 11, color: HF.text50, marginBottom: 6 }}>HI 점수 추이 {demoMode ? '(라이브)' : '(전체 구간)'}</div>
+            <div style={{ fontSize: 11, color: HF.text50, marginBottom: 6 }}>HI 점수 추이 {demoMode ? '(라이브)' : '(전체)'}</div>
             <LineChart
               data={hiScoreArr}
               width={290} height={70}
@@ -254,36 +243,13 @@ export default function Dashboard() {
               threshold={25}
             />
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
-              <span style={{ fontSize: 10, color: HF.text40 }}>t=0</span>
+              <span style={{ fontSize: 10, color: HF.text40 }}>0</span>
               <span style={{ fontSize: 10, color: HF.bad }}>── 등급D 임계</span>
-              <span style={{ fontSize: 10, color: HF.text40 }}>t={activeData[activeData.length - 1]?.time}h</span>
+              <span style={{ fontSize: 10, color: HF.text40 }}>{activeData[activeData.length - 1]?.time}h</span>
             </div>
           </div>
         </div>
       </Section>
-
-      {/* AI 핫딜 매칭 알림 (위험 상태 시) */}
-      {grade === 'D' && (
-        <div style={{ padding: '0 24px', marginBottom: 20 }}>
-          <div style={{ 
-            background: '#ffebee', border: '1px solid rgba(229,57,53,0.3)', 
-            borderRadius: 20, padding: 16, display: 'flex', gap: 12, alignItems: 'flex-start' 
-          }}>
-            <div style={{ fontSize: 24, marginTop: 2 }}>🤖</div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: HF.bad, marginBottom: 4 }}>AI 핫딜 자동 매칭</div>
-              <div style={{ fontSize: 13, color: HF.text, lineHeight: 1.4, marginBottom: 12 }}>
-                유압실린더 교체가 시급합니다.<br/>
-                마침 근처 마켓에 <b>A급 중고(Reman)</b>가<br/>
-                특가로 올라왔어요!
-              </div>
-              <button className="hf-btn hf-btn-primary" style={{ width: '100%', background: HF.bad, boxShadow: 'none' }} onClick={() => navigate('/market')}>
-                판매자와 채팅하기 (₩1,200,000)
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* 센서 현황 */}
       <Section title="센서 현황" action="상세 보기" onAction={() => navigate('/sensor', { state: { sensor: 'pressure' } })}>
@@ -313,18 +279,56 @@ export default function Dashboard() {
         </div>
       </Section>
 
-      {/* 빠른 액션 */}
-      <Section title="빠른 액션">
+      {/* KONECT 연동 상태 + 데모 모드 */}
+      <div style={{ padding: '8px 24px 0', display: 'flex', gap: 8, alignItems: 'center' }}>
+        <div className="hf-pill" style={{ padding: '4px 10px', fontSize: 10, background: 'rgba(0,102,51,0.08)', color: HF.green, cursor: 'pointer' }}
+          onClick={() => navigate('/konect')} aria-label="KONECT 연동 상태">
+          <span style={{ width: 6, height: 6, borderRadius: 99, background: HF.green, display: 'inline-block', marginRight: 4, boxShadow: `0 0 6px ${HF.green}` }} />
+          KONECT 연동
+        </div>
+        <div
+          className={`hf-pill ${demoMode ? 'hf-pill-on' : ''}`}
+          style={{ padding: '4px 10px', fontSize: 10, cursor: 'pointer' }}
+          onClick={() => {
+            if (!demoMode) { setDemoMode(true); streaming.start(); }
+            else { setDemoMode(false); streaming.stop(); }
+          }}
+          aria-label="라이브 데모 토글"
+        >
+          {demoMode
+            ? <span>▶ LIVE {Math.round(streaming.progress * 100)}%</span>
+            : <><Icon name="play" size={11} /><span>데모</span></>}
+        </div>
+        {demoMode && (
+          <div className="hf-pill" style={{ padding: '4px 8px', fontSize: 10 }}
+            onClick={() => streaming.setSpeed(streaming.speed === 100 ? 300 : streaming.speed === 300 ? 50 : 100)}>
+            ×{streaming.speed === 100 ? '1' : streaming.speed === 300 ? '3' : '0.5'}
+          </div>
+        )}
+      </div>
+
+      {/* 바로가기 */}
+      <Section title="바로가기">
         <div style={{ display: 'flex', gap: 10, marginBottom: 12 }}>
           <button className="hf-btn" style={{ flex: 1 }} onClick={() => navigate('/sensor')} aria-label="센서 진단">센서 진단</button>
           <button className="hf-btn" style={{ flex: 1 }} onClick={() => navigate('/twin')} aria-label="실시간 3D">실시간 3D</button>
           <button className="hf-btn hf-btn-primary" style={{ flex: 1 }} onClick={() => navigate('/recovery')} aria-label="회수 요청">회수 요청</button>
         </div>
-        <button className="hf-btn" style={{ width: '100%', background: '#ffebee', color: HF.bad, border: '1px solid rgba(229,57,53,0.2)', padding: '14px', fontSize: 15 }}
+        <button className="hf-btn" style={{ width: '100%', background: 'rgba(235,87,87,0.14)', color: HF.bad, border: '1px solid rgba(235,87,87,0.35)', padding: '14px', fontSize: 15 }}
           onClick={() => alert('반경 5km 내 기사님 3명에게 긴급 SOS 호출을 보냈습니다. 🚑')}>
-          🚨 주변 기사님께 긴급 SOS 치기
+          <Icon name="alert" size={16} style={{ marginRight: 8 }} /> 주변 기사님께 긴급 SOS 치기
         </button>
       </Section>
+
+      {/* 운전 마스터 온도 */}
+      <div style={{ padding: '4px 24px 0' }}>
+        <div className="hf-glass-soft" style={{ padding: '16px', borderRadius: 20 }}>
+          <DriverScore score={72.5} />
+          <div style={{ fontSize: 11, color: HF.text50, marginTop: 10, lineHeight: 1.4 }}>
+            운전 습관 점수는 HI에 직접 반영돼요
+          </div>
+        </div>
+      </div>
 
       {/* AI 정비 캘린더 */}
       <Section title="AI 정비 캘린더" action="전체 보기" onAction={() => navigate('/rul')}>
@@ -333,15 +337,12 @@ export default function Dashboard() {
             {/* 1st Schedule */}
             <div style={{ display: 'flex', gap: 12, position: 'relative' }}>
               <div style={{ position: 'absolute', left: 15, top: 28, bottom: -20, width: 2, background: 'var(--hf-text-10)' }}></div>
-              <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#ffebee', color: HF.bad, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, zIndex: 1, fontWeight: 700 }}>
+              <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(235,87,87,0.16)', color: HF.bad, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, zIndex: 1, fontWeight: 700 }}>
                 14
               </div>
               <div style={{ flex: 1, paddingTop: 6 }}>
                 <div style={{ fontSize: 11, color: HF.bad, fontWeight: 700 }}>이번 주 금요일 (수명 임박)</div>
                 <div style={{ fontSize: 14, fontWeight: 700, marginTop: 4 }}>유압실린더 교체 필요</div>
-                <button className="hf-pill" style={{ marginTop: 10, fontSize: 12, padding: '6px 12px', color: HF.bad, borderColor: 'rgba(229,57,53,0.3)', background: '#fff' }} onClick={() => navigate('/market')}>
-                  미리 핫딜로 구매하기
-                </button>
               </div>
             </div>
             {/* 2nd Schedule */}
@@ -352,21 +353,46 @@ export default function Dashboard() {
               <div style={{ flex: 1, paddingTop: 6 }}>
                 <div style={{ fontSize: 11, color: HF.text50, fontWeight: 700 }}>다음 주 금요일</div>
                 <div style={{ fontSize: 14, fontWeight: 700, marginTop: 4 }}>엔진오일 교환 (500h)</div>
-                <button className="hf-pill" style={{ marginTop: 10, fontSize: 12, padding: '6px 12px' }} onClick={() => navigate('/market')}>
-                  공동구매 참여하기
-                </button>
               </div>
             </div>
           </div>
         </div>
       </Section>
 
+      {/* 날씨 맞춤형 장비 관리 알림 */}
+      <div style={{ padding: '0 24px 12px' }}>
+        <div className="hf-glass-soft" style={{ borderRadius: 16, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 16, background: 'rgba(33, 150, 243, 0.08)', border: '1px solid rgba(33, 150, 243, 0.2)' }}>
+          <div style={{ display: 'flex', color: '#1976D2' }}><Icon name="snow" size={22} /></div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#1976D2' }}>내일 영하 10도 한파 특보</div>
+            <div style={{ fontSize: 11, color: HF.text50, marginTop: 4, lineHeight: 1.3 }}>아침 시동 시 유압유 예열을 평소보다 5분 더 해주세요</div>
+          </div>
+        </div>
+      </div>
+
+      {/* 내 장비 가계부 & ESG 리포트 */}
+      <div style={{ padding: '12px 24px 0', display: 'flex', gap: 12 }}>
+        {/* 가계부 (ROI) */}
+        <div className="hf-glass-soft" style={{ flex: 1, borderRadius: 16, padding: '14px', display: 'flex', flexDirection: 'column', border: `1px solid var(--hf-divider)` }}>
+          <div style={{ fontSize: 11, color: HF.text50, fontWeight: 600, marginBottom: 6 }}>이번 달 아낀 유지비</div>
+          <div style={{ fontSize: 18, fontWeight: 800, color: HF.green, letterSpacing: -0.5 }}>₩350,000</div>
+        </div>
+        {/* ESG 탄소 저감 리포트 */}
+        <div className="hf-glass-soft" style={{ flex: 1, borderRadius: 16, padding: '14px', display: 'flex', flexDirection: 'column', border: `1px solid var(--hf-divider)` }}>
+          <div style={{ fontSize: 11, color: HF.text50, fontWeight: 600, marginBottom: 6 }}>ESG 탄소 저감량</div>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+            <div style={{ fontSize: 18, fontWeight: 800, color: '#27AE60', letterSpacing: -0.5 }}>152<span style={{ fontSize: 12, fontWeight: 600 }}>kg</span></div>
+            <div style={{ fontSize: 11, color: '#27AE60', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 3 }}><Icon name="tree" size={13} /> 나무 12그루</div>
+          </div>
+        </div>
+      </div>
+
       {/* AI 자동 운행(작업) 일지 */}
       <Section title="AI 자동 운행 일지" action="내역 보기" onAction={() => alert('지난 일지 내역을 봅니다.')}>
         <div className="hf-glass-soft" style={{ borderRadius: 20, padding: 20 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 20 }}>📝</span>
+              <span style={{ display: 'flex', color: HF.green }}><Icon name="log" size={20} /></span>
               <span style={{ fontSize: 15, fontWeight: 700 }}>오늘의 작업 요약</span>
             </div>
             <span style={{ fontSize: 11, color: HF.text50 }}>6월 1일 (수)</span>
@@ -400,13 +426,13 @@ export default function Dashboard() {
           background: 'linear-gradient(135deg, #00FF44, #006633)',
           boxShadow: '0 8px 24px rgba(0,230,0,0.4)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 28, transition: 'transform 0.2s'
+          color: '#fff', transition: 'transform 0.2s'
         }}
         onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1)'}
         onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
         aria-label="AI 정비 어시스턴트 열기"
       >
-        🤖
+        <Icon name="bot" size={28} />
       </div>
 
       {showOrb && <OrbAI onClose={() => setShowOrb(false)} />}
