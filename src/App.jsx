@@ -15,7 +15,6 @@ import Profile             from './screens/Profile.jsx';
 import FleetDashboard      from './screens/FleetDashboard.jsx';
 import HIReport            from './screens/HIReport.jsx';
 import NotificationPanel   from './screens/NotificationPanel.jsx';
-import KonectIntegration   from './screens/KonectIntegration.jsx';
 import Market              from './screens/Market.jsx';
 import Community           from './screens/Community.jsx';
 
@@ -41,7 +40,6 @@ export default function App() {
             <Route path="/fleet"         element={<FleetDashboard />} />
             <Route path="/report"        element={<HIReport />} />
             <Route path="/notifications" element={<NotificationPanel />} />
-            <Route path="/konect"        element={<KonectIntegration />} />
             
             {/* 2.0 플랫폼 혁신 화면 */}
             <Route path="/market"        element={<Market />} />

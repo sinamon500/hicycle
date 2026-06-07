@@ -174,6 +174,8 @@ export default function Market() {
       </Section>
 
       <TabBar />
+      <TabBar />
+      <div className="bottom-safe-spacer" />
     </>
   );
 }

@@ -135,9 +135,12 @@ button { font-family: inherit; }
 
 .app-content {
   height: 100dvh;
+  min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding-bottom: calc(124px + env(safe-area-inset-bottom, 0px)); /* room for floating tabbar */
+  padding-bottom: calc(180px + env(safe-area-inset-bottom, 0px));
+  scroll-padding-bottom: calc(180px + env(safe-area-inset-bottom, 0px));
+  overscroll-behavior-y: contain;
 }
 .app-content::-webkit-scrollbar { display: none; }
 .app-content { scrollbar-width: none; }
@@ -446,3 +449,9 @@ input:focus { outline: none; }
   border-bottom: 1px solid var(--hf-divider);
 }
 .report-section:last-child { border-bottom: none; }
+
+
+.bottom-safe-spacer {
+  height: calc(88px + env(safe-area-inset-bottom, 0px));
+  flex-shrink: 0;
+}

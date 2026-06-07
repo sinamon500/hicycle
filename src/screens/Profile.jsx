@@ -26,6 +26,31 @@ export default function Profile() {
       <TopBar right={<div className="hf-pill" style={{ padding: '10px 12px' }}><Icon name="gear" size={16} /></div>} />
       <TitleBlock title="내 정보" />
 
+      {/* 한파 특보: 김기사 카드 위 */}
+      <div style={{ padding: '14px 24px 0' }}>
+        <div className="hf-glass-soft" style={{
+          borderRadius: 16,
+          padding: '12px 16px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 16,
+          background: 'rgba(33, 150, 243, 0.08)',
+          border: '1px solid rgba(33, 150, 243, 0.2)',
+        }}>
+          <div style={{ display: 'flex', color: '#1976D2' }}>
+            <Icon name="snow" size={22} />
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#1976D2' }}>
+              내일 영하 10도 한파 특보
+            </div>
+            <div style={{ fontSize: 11, color: HF.text50, marginTop: 4, lineHeight: 1.3 }}>
+              아침 시동 시 유압유 예열을 평소보다 5분 더 해주세요
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* 프로필 카드 */}
       <div style={{ padding: '14px 24px 0' }}>
         <div className="hf-glass" style={{ borderRadius: 28, padding: 20, display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -91,6 +116,61 @@ export default function Profile() {
         </Section>
       )}
 
+      {/* 유지비 & ESG 리포트: 현재 장비 상태 아래 */}
+      <div style={{ padding: '0 24px', display: 'flex', gap: 12 }}>
+        <div className="hf-glass-soft" style={{ flex: 1, borderRadius: 16, padding: 14, display: 'flex', flexDirection: 'column', border: `1px solid var(--hf-divider)` }}>
+          <div style={{ fontSize: 11, color: HF.text50, fontWeight: 600, marginBottom: 6 }}>
+            이번 달 아낀 유지비
+          </div>
+          <div style={{ fontSize: 18, fontWeight: 800, color: HF.green, letterSpacing: -0.5 }}>
+            ₩350,000
+          </div>
+        </div>
+
+        <div className="hf-glass-soft" style={{ flex: 1, borderRadius: 16, padding: 14, display: 'flex', flexDirection: 'column', border: `1px solid var(--hf-divider)` }}>
+          <div style={{ fontSize: 11, color: HF.text50, fontWeight: 600, marginBottom: 6 }}>
+            ESG 탄소 저감량
+          </div>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, flexWrap: 'wrap' }}>
+            <div style={{ fontSize: 18, fontWeight: 800, color: '#27AE60', letterSpacing: -0.5 }}>
+              152<span style={{ fontSize: 12, fontWeight: 600 }}>kg</span>
+            </div>
+            <div style={{ fontSize: 11, color: '#27AE60', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+              <Icon name="tree" size={13} />나무 12그루
+            </div>
+          </div>
+        </div>
+      </div>  
+
+           {/* AI 정비 캘린더 */}
+      <Section title="AI 정비 캘린더" action="전체 보기" onAction={() => navigate('/rul')}>
+        <div className="hf-glass-soft" style={{ borderRadius: 20, padding: 16 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {/* 1st Schedule */}
+            <div style={{ display: 'flex', gap: 12, position: 'relative' }}>
+              <div style={{ position: 'absolute', left: 15, top: 28, bottom: -20, width: 2, background: 'var(--hf-text-10)' }}></div>
+              <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(235,87,87,0.16)', color: HF.bad, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, zIndex: 1, fontWeight: 700 }}>
+                14
+              </div>
+              <div style={{ flex: 1, paddingTop: 6 }}>
+                <div style={{ fontSize: 11, color: HF.bad, fontWeight: 700 }}>이번 주 금요일 (수명 임박)</div>
+                <div style={{ fontSize: 14, fontWeight: 700, marginTop: 4 }}>유압실린더 교체 필요</div>
+              </div>
+            </div>
+            {/* 2nd Schedule */}
+            <div style={{ display: 'flex', gap: 12, position: 'relative' }}>
+              <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--hf-bg-deep)', color: HF.text50, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, zIndex: 1, fontWeight: 700 }}>
+                29
+              </div>
+              <div style={{ flex: 1, paddingTop: 6 }}>
+                <div style={{ fontSize: 11, color: HF.text50, fontWeight: 700 }}>다음 주 금요일</div>
+                <div style={{ fontSize: 14, fontWeight: 700, marginTop: 4 }}>엔진오일 교환 (500h)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Section>
+
       {/* 설정 목록 */}
       <Section title="설정">
         <div className="hf-glass-soft" style={{ borderRadius: 22, padding: 0 }}>
@@ -143,6 +223,8 @@ export default function Profile() {
       </Section>
 
       <TabBar />
+      <TabBar />
+      <div className="bottom-safe-spacer" />
     </>
   );
 }
